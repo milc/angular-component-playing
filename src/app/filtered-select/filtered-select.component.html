@@ -1,0 +1,38 @@
+<div class="tile m-1">
+  <h3>Filterable select</h3>
+
+  <label for="domainQuery">Filter:</label>
+  <input [(ngModel)]="query" (change)="onQuery()" name="domainQuery" placeholder="Type something"/>
+
+  <hr>
+
+  <label for="domainSelect">Select:</label>
+  <select name="domainSelect">
+    <ng-container *ngFor="let domain of filteredDomains">
+      <option *ngIf="domain.display" (click)="onSelect(domain)">{{domain.name}}</option>
+    </ng-container>
+  </select>
+
+  <hr>
+
+  <span>List:</span>
+  <ul class="domains">
+    <ng-container *ngFor="let domain of filteredDomains">
+      <li *ngIf="domain.display" (click)="onSelect(domain)">
+        <span class="badge">{{domain.id}}</span> {{domain.name}}
+      </li>
+    </ng-container>
+  </ul>
+</div>
+
+<div class="tile m-1">
+  <div *ngIf="selectedDomain">
+    <h2>{{selectedDomain.name }} details</h2>
+    <div>
+      <span>id: </span>{{selectedDomain.id}}
+      <label>name:
+        <input [(ngModel)]="selectedDomain.name" placeholder="name"/>
+      </label>
+    </div>
+  </div>
+</div>
