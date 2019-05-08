@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Domain } from '../domain';
 import { DOMAINS } from '../mock-domains';
 
@@ -9,12 +9,11 @@ import { DOMAINS } from '../mock-domains';
 })
 export class FilteredSelectComponent implements OnInit {
 
-  domains = DOMAINS;
-  filteredDomains = [];
-  displayedDomains: number;
-  selectedDomain: Domain;
-  query: string;
+  private domains = DOMAINS;
   private storageName = 'filtered-select-state';
+  filteredDomains: Domain[] = null;
+  selectedDomain: Domain = null;
+  @Input() query: string = '';
 
   constructor() {
   }
@@ -29,18 +28,34 @@ export class FilteredSelectComponent implements OnInit {
     if(storage.filteredDomains && storage.filteredDomains !== '') {
       this.filteredDomains = storage.filteredDomains;
     }
-    this.countDisplayedDomains();
+    if(storage.selectedDomain && storage.selectedDomain !== '') {
+      this.selectedDomain = storage.selectedDomain;
+    } else if(this.selectedDomain === null) {
+      this.selectedDomain = this.filteredDomains[0];
+    }
+
+    this.filterHandler();
   }
 
-  onSelect(domain: Domain): void {
+  onSelectChange(event: any): void {
+    for(const target of event.target) {
+      if(target.selected === true) {
+        this.updateSelectedDomain(JSON.parse(target.value));
+        return;
+      }
+    }
+  }
+
+  updateSelectedDomain(domain: Domain): void {
     this.selectedDomain = domain;
+    this.updateStorage();
   }
 
   onQuery(): void {
     const query = this.query;
     let hasMatch = false;
 
-    this.filteredDomains = this.domains.map(domain => {
+    this.filteredDomains = this.domains.filter(domain => {
 
       let regmatch = null;
 
@@ -50,31 +65,44 @@ export class FilteredSelectComponent implements OnInit {
       } catch(err) {}
 
       if(domain.name.includes(query) || (regmatch !== null && regmatch.length > 0)) {
-        domain.display = true;
+        domain._display = true;
         hasMatch = true;
+        return domain;
       } else {
-        domain.display = false;
+        domain._display = false;
       }
-
-      return domain;
     });
 
-    this.countDisplayedDomains();
+    this.filterHandler();
 
     if(hasMatch) {
       this.updateStorage();
     }
   }
 
-  countDisplayedDomains(): void {
-    let count = 0;
-    this.filteredDomains.forEach(domain => {
-      if(domain.display) {
-        count++;
-      }
-      // return count;
+  resetQuery(): void {
+    this.query = '';
+    this.filteredDomains = this.domains.filter(domain => {
+      domain._display = true;
+      return domain;
     });
-    this.displayedDomains = count;
+
+  }
+
+  filterHandler(): void {
+
+    // If one result, select it
+    if(this.filteredDomains.length === 1) {
+      const result = this.filteredDomains.filter((domain: Domain) => {
+        if(domain._display === true) {
+          return domain;
+        }
+      })[0];
+
+      if(typeof result === 'object') {
+        this.selectedDomain = result;
+      }
+    }
   }
 
   getStorage(): any {
@@ -91,7 +119,11 @@ export class FilteredSelectComponent implements OnInit {
   // TODO: cookie fallback
   updateStorage(): void {
     if (window.localStorage) {
-      localStorage.setItem(this.storageName, JSON.stringify({query: this.query, filteredDomains: this.filteredDomains}));
+      localStorage.setItem(this.storageName, JSON.stringify({
+        query: this.query,
+        selectedDomain: this.selectedDomain,
+        filteredDomains: this.filteredDomains
+      }));
     }
   }
 }

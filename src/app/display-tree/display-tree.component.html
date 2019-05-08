@@ -1,0 +1,19 @@
+<ul *ngFor="let leaf of tree">
+  <li>
+    {{leaf.node}}
+    <ng-container *ngIf="leaf.children.length > 0">
+      <ul *ngFor="let child of leaf.children">
+        <li>
+          {{child.node}}
+          <ng-container *ngIf="child.children.length > 0">
+            <ul *ngFor="let grandchild of child.children">
+              <li>
+                {{grandchild.node}}
+              </li>
+            </ul>
+          </ng-container>
+        </li>
+      </ul>
+    </ng-container>
+  </li>
+</ul>

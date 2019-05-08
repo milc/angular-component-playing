@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { FilteredSelectComponent } from './filtered-select/filtered-select.component';
+import { DisplayTreeComponent } from './display-tree/display-tree.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    FilteredSelectComponent
+    FilteredSelectComponent,
+    DisplayTreeComponent
   ],
   imports: [
     BrowserModule,

@@ -5,22 +5,30 @@
 
     <label for="domainQuery">Filter:</label>
     <div class="input-group">
-      <input [(ngModel)]="query" (keyup)="onQuery()" class="form-control" name="domainQuery" placeholder="Type something"/>
-      <div class="input-group-prepend">
-        <div class="input-group-text">
-          <span class="badge" *ngIf="displayedDomains">{{displayedDomains}}</span>
-        </div>
-      </div>
+        <input [(ngModel)]="query" (keyup)="onQuery()" class="form-control" id="domainQuery" placeholder="Type something"/>
+        <span class="input-group-append">
+          <button (click)="resetQuery()" class="btn btn-outline-secondary border-left-0 border" type="button">
+            <i class="fas fa-backspace"></i>
+          </button>
+        </span>
     </div>
+
     <hr>
 
-    <div class="form-group">
-      <label for="domainSelect">Select:</label>
-      <select class="form-control custom-select" name="domainSelect">
+    <div class="input-group">
+      <select (change)="onSelectChange($event)" class="form-control custom-select" id="domainSelect" name="domainSelect">
         <ng-container *ngFor="let domain of filteredDomains">
-          <option *ngIf="domain.display" (click)="onSelect(domain)">{{domain.name}}</option>
+          <option *ngIf="domain._display"
+          [selected]="domain.id === selectedDomain.id"
+          value="{{domain | json}}">{{domain.name}}</option>
         </ng-container>
       </select>
+
+      <div class="input-group-append">
+        <div class="input-group-text border-left-0">
+          <span class="badge" *ngIf="filteredDomains">{{filteredDomains.length}}</span>
+        </div>
+      </div>
     </div>
 
     <hr>
@@ -28,10 +36,12 @@
     <span>List:</span>
     <div class="list-group domains">
       <ng-container *ngFor="let domain of filteredDomains">
-        <span *ngIf="domain.display" (click)="onSelect(domain)"
-           class="list-group-item list-group-item-action">
-          <span class="badge">{{domain.id}}</span> {{domain.name}}
-        </span>
+        <ng-container *ngIf="domain._display">
+
+          <span (click)="updateSelectedDomain(domain)" class="list-group-item list-group-item-action" [class.active]="domain.id === selectedDomain.id">
+            <span class="badge">{{domain.id}}</span> {{domain.name}}
+          </span>
+        </ng-container>
       </ng-container>
     </div>
 
@@ -40,14 +50,21 @@
 
     <div *ngIf="selectedDomain">
       <h3>Selected item</h3>
-      <p>
-        <span>id: </span>{{selectedDomain.id}}<br>
-        <span>name: </span>{{selectedDomain.name}}
-      </p>
         <!-- <label>name:
           <input [(ngModel)]="selectedDomain.name" placeholder="name"/>
         </label> -->
+        <table class="table">
+          <tbody>
+            <tr>
+              <th scope="row">{{selectedDomain.id}}</th>
+              <td>{{selectedDomain.name}}</td>
+            </tr>
+          </tbody>
+        </table>
     </div>
 
+
+    <h3>Tree</h3>
+    <app-display-tree [treeObj]="filteredDomains"></app-display-tree>
   </div>
 </div>

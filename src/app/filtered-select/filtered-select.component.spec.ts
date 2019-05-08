@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { FormsModule } from '@angular/forms';
 import { FilteredSelectComponent } from './filtered-select.component';
+import { DisplayTreeComponent } from '../display-tree/display-tree.component';
 
 describe('FilteredSelectComponent', () => {
   let component: FilteredSelectComponent;
@@ -8,7 +9,13 @@ describe('FilteredSelectComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FilteredSelectComponent ]
+      imports: [
+        FormsModule
+      ],
+      declarations: [
+        FilteredSelectComponent,
+        DisplayTreeComponent
+      ]
     })
     .compileComponents();
   }));

@@ -1,5 +1,7 @@
 export class Domain {
   id: number;
+  parentId: number;
   name: string;
-  display: boolean;
+  desc: string;
+  _display: boolean;
 }
